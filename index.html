@@ -6,149 +6,165 @@
     <title>Studio Catalog Workbench</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Custom font smoothing and fine details to mimic high-end editorial portfolios */
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
         body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
         
-        /* Specialized CSS overrides to force browsers to print the exact styling layout */
+        .serif-title {
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+
+        /* HARDWARE CORRECTION FOR WEB PRINTING: Drops all default browser header/footer markers */
         @media print {
-            body { background: #ffffff !important; color: #1c1917 !important; padding: 0 !important; margin: 0 !important; }
+            @page { 
+                size: A4 portrait; 
+                margin: 15mm 20mm 15mm 20mm; 
+            }
+            html, body {
+                background: #ffffff !important;
+                color: #242220 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
             .no-print { display: none !important; }
-            .print-page { padding: 0 !important; margin: 0 !important; box-shadow: none !important; max-width: 100% !important; background: transparent !important; }
-            .catalog-grid { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 2.5rem !important; }
-            .product-card { page-break-inside: avoid !important; break-inside: avoid !important; border-color: #e7e5e4 !important; }
-            @page { size: A4 portrait; margin: 20mm; }
+            .print-page { 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                box-shadow: none !important; 
+                max-width: 100% !important; 
+                background: transparent !important; 
+                border: none !important;
+            }
+            .catalog-grid { 
+                display: grid !important; 
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important; 
+                gap: 2.5rem !important; 
+            }
+            .product-card { 
+                page-break-inside: avoid !important; 
+                break-inside: avoid !important; 
+            }
         }
     </style>
 </head>
-<body class="bg-[#fcfbf9] text-[#242220] min-h-screen p-4 md:p-12 font-sans flex flex-col items-center">
+<body class="bg-[#fcfbf9] text-[#242220] min-h-screen p-4 md:p-12 flex flex-col items-center">
 
-    <div class="no-print w-full max-w-5xl bg-white border border-[#e2dfda] p-8 rounded-lg shadow-sm mb-12">
+    <!-- HOME CANVAS DESIGN CONSOLE (Hidden during print) -->
+    <div class="no-print w-full max-w-5xl bg-white border border-[#e2dfda] p-8 rounded shadow-sm mb-12">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-[#f0ede9] pb-5 gap-4">
             <div>
-                <h1 class="text-xl font-light tracking-wide text-[#242220] uppercase font-serif">Catalog Design Studio</h1>
-                <p class="text-xs text-stone-400 mt-1">Update your collection layout using automated Shopify CSV files or manual entry forms.</p>
+                <h1 class="text-lg uppercase tracking-widest text-[#242220] font-medium serif-title">Catalog Workbench</h1>
+                <p class="text-xs text-stone-400 mt-1">Batch load a raw Shopify CSV export or append individual collection pieces below.</p>
             </div>
-            <button onclick="window.print()" class="bg-[#242220] text-[#fcfbf9] text-xs px-6 py-3 rounded uppercase tracking-widest font-medium hover:bg-[#3e3a36] transition-colors shadow-sm">
-                Print / Export PDF
+            <button onclick="window.print()" class="bg-[#242220] text-[#fcfbf9] text-xs px-6 py-3 rounded uppercase tracking-widest font-semibold hover:bg-[#3e3a36] transition-colors shadow-sm">
+                Print / Export Catalog
             </button>
         </div>
         
         <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <!-- Shopify File Parser -->
             <div class="lg:col-span-2 border-r border-[#f0ede9] pr-0 lg:pr-6 flex flex-col justify-between">
                 <div>
                     <h3 class="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-2">01 / Shopify Sync</h3>
-                    <p class="text-xs text-stone-400 mb-4 font-light leading-relaxed">Drop your standard Shopify product export file to parse and map titles, pricing, and imagery instantly.</p>
+                    <p class="text-xs text-stone-400 mb-4 font-light leading-relaxed">Drop your native product export sheet here to auto-populate the line-sheet assets grid.</p>
                 </div>
-                
-                <div class="border border-dashed border-[#c2beba] rounded-lg p-6 text-center bg-[#faf9f6] transition-colors hover:border-[#242220] relative min-h-[140px] flex items-center justify-center group">
+                <div class="border border-dashed border-[#c2beba] rounded p-6 text-center bg-[#faf9f6] transition-colors hover:border-[#242220] relative min-h-[140px] flex items-center justify-center group">
                     <input type="file" id="csvFile" accept=".csv" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleShopifyCSV(event)">
-                    <div id="uploadStatus" class="text-xs text-stone-500 font-light leading-relaxed group-hover:text-[#242220] transition-colors">
-                        <span class="font-normal text-[#242220] underline block mb-1">Upload Product CSV</span> or drag file entity here
+                    <div id="uploadStatus" class="text-xs text-stone-500 font-light group-hover:text-[#242220] transition-colors">
+                        <span class="font-normal text-[#242220] underline block mb-1">Upload Product CSV</span> or drop asset sheet
                     </div>
                 </div>
             </div>
 
+            <!-- Custom Manual Item Form -->
             <div class="lg:col-span-3">
-                <h3 class="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-3">02 / Manual Piece Addition</h3>
-                
+                <h3 class="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-3">02 / Custom Spec Addition</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                    <div>
-                        <input type="text" id="pTitle" class="w-full p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220] transition-colors" placeholder="Product Title">
-                    </div>
-                    <div>
-                        <input type="text" id="pPrice" class="w-full p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220] transition-colors" placeholder="Price (e.g., $1,250)">
-                    </div>
-                    <div class="sm:col-span-2">
-                        <input type="text" id="pImage" class="w-full p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220] transition-colors" placeholder="Paste Public Image Link Address (URL)">
-                    </div>
-                    <div class="sm:col-span-2">
-                        <textarea id="pDesc" rows="2" class="w-full p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220] transition-colors" placeholder="Composition details, material callouts, dimensions..."></textarea>
-                    </div>
+                    <input type="text" id="pTitle" class="p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220]" placeholder="Product Title">
+                    <input type="text" id="pPrice" class="p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220]" placeholder="Price (e.g. ₹45,000)">
+                    <input type="text" id="pImage" class="sm:col-span-2 p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220]" placeholder="Image Link Address URL">
+                    <textarea id="pDesc" rows="2" class="sm:col-span-2 p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220]" placeholder="Enter item specifications, composition, or custom notes..."></textarea>
                 </div>
-
-                <button onclick="addManualProduct()" class="w-full bg-[#f4f2ee] text-[#242220] text-xs py-3 rounded uppercase tracking-wider font-medium hover:bg-[#eaddd3] hover:text-[#242220] transition-all border border-[#e2dfda]">
-                    + Append Piece to Canvas
+                <button onclick="addManualProduct()" class="w-full bg-[#f4f2ee] text-[#242220] text-xs py-3 rounded uppercase tracking-wider font-semibold hover:bg-[#eaddd3] transition-all border border-[#e2dfda]">
+                    + Append Item to Canvas
                 </button>
             </div>
         </div>
     </div>
 
-    <div class="print-page w-full max-w-5xl bg-[#fbfaf7] border border-[#eaddd3] p-12 md:p-20 shadow-sm min-h-[297mm] flex flex-col justify-between">
+    <!-- THE BRANDED EDITORIAL CANVAS -->
+    <div class="print-page w-full max-w-5xl bg-[#fbfaf7] border border-[#eaddd3] p-12 md:p-16 shadow-sm min-h-[297mm] flex flex-col justify-between">
         <div>
+            <!-- Lookbook Header Frame -->
             <div class="border-b border-[#242220] pb-6 mb-12 flex justify-between items-end">
                 <div>
-                    <span class="text-[10px] uppercase tracking-[0.3em] text-stone-400 font-semibold block mb-1">Curated Spaces Portfolio</span>
-                    <h2 class="text-3xl font-light tracking-wide text-[#242220] font-serif uppercase">Studio Lookbook</h2>
+                    <span class="text-[10px] uppercase tracking-[0.25em] text-stone-400 font-bold block mb-1">Curated Portfolio Layout</span>
+                    <h2 class="text-2xl tracking-wide text-[#242220] serif-title font-light uppercase">Collection Line-Sheet</h2>
                 </div>
                 <div class="text-right">
-                    <span class="text-[10px] uppercase tracking-[0.2em] text-[#7c756e] font-medium block">Confidential Spec-Sheet</span>
+                    <span class="text-[10px] uppercase tracking-[0.15em] text-[#7c756e] font-semibold block">Home Canvas Spec Sheet</span>
                 </div>
             </div>
 
-            <div id="catalogGrid" class="catalog-grid grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-14">
+            <!-- Product Grid -->
+            <div id="catalogGrid" class="catalog-grid grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-12">
                 <div id="placeholderText" class="col-span-2 text-center py-24 text-stone-300 font-light text-sm italic tracking-wide">
                     Your collection layout canvas is currently empty. Initialize a Shopify CSV file import or add a manual record block above.
                 </div>
             </div>
         </div>
 
-        <div class="border-t border-[#e7e5e4] pt-6 mt-16 flex justify-between items-center text-[9px] uppercase tracking-widest text-stone-400 font-medium">
-            <span>© Home Canvas Aesthetics</span>
-            <span>All Designs Modular & Adaptable</span>
+        <!-- Footnote Frame -->
+        <div class="border-t border-[#e7e5e4] pt-6 mt-16 flex justify-between items-center text-[9px] uppercase tracking-widest text-stone-400 font-semibold">
+            <span>© Home Canvas</span>
+            <span>Handcrafted Hand-Selected Materials</span>
         </div>
     </div>
 
     <script>
-        // Layout renderer mirroring the minimalist look of Home Canvas product arrays
         function appendProductToLayout(title, price, image, desc) {
             const grid = document.getElementById('catalogGrid');
             const placeholder = document.getElementById('placeholderText');
             if(placeholder) placeholder.remove();
 
             const cardHTML = `
-                <div class="product-card flex flex-col justify-between bg-white p-5 border border-[#eae6df] rounded shadow-[0_4px_12px_rgba(0,0,0,0.02)] transition-shadow hover:shadow-md">
-                    <div>
-                        ${image ? 
-                            `<div class="w-full h-72 bg-[#fcfbf9] overflow-hidden mb-5 rounded-sm border border-[#f5f4f0]">
-                                <img src="${image}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" crossorigin="anonymous">
-                             </div>` : 
-                            `<div class="w-full h-72 bg-[#f5f4f0] mb-5 flex items-center justify-center text-[11px] uppercase tracking-widest text-stone-400 italic rounded-sm">
-                                Asset Image Not Staged
-                             </div>`
-                        }
-                        <div class="flex justify-between items-start gap-4 mb-3">
-                            <h3 class="text-base font-normal tracking-wide text-[#242220] uppercase font-serif leading-tight">${title}</h3>
-                            <span class="text-sm font-medium text-[#7c756e] whitespace-nowrap">${price ? price : 'Price on Request'}</span>
-                        </div>
+                <div class="product-card flex flex-col bg-white p-5 border border-[#eae6df] rounded shadow-[0_4px_12px_rgba(0,0,0,0.01)]">
+                    ${image ? 
+                        `<div class="w-full h-64 bg-[#fcfbf9] overflow-hidden mb-4 rounded-sm border border-[#f5f4f0]">
+                            <img src="${image}" class="w-full h-full object-cover" crossorigin="anonymous">
+                         </div>` : 
+                        `<div class="w-full h-64 bg-[#f5f4f0] mb-4 flex items-center justify-center text-[10px] uppercase tracking-widest text-stone-400 italic font-medium">Image Not Provided</div>`
+                    }
+                    <div class="flex justify-between items-baseline gap-4 mb-2">
+                        <h3 class="text-sm font-normal tracking-wide text-[#242220] uppercase serif-title leading-tight">${title}</h3>
+                        <span class="text-xs font-semibold text-[#7c756e] whitespace-nowrap">${price ? price : 'Price on Request'}</span>
                     </div>
-                    <p class="text-xs text-stone-500 leading-relaxed font-light mt-1 text-justify line-clamp-4 border-t border-[#fdfcfb] pt-2">${desc ? desc : 'Custom material data sheet specifications, hardware latency finishes, and bespoke modifications available upon inquiry.'}</p>
+                    <p class="text-xs text-stone-500 leading-relaxed font-light text-justify border-t border-[#fdfcfb] pt-2">${desc ? desc : 'Custom material specifications and bespoke configuration modules are available upon studio inquiry.'}</p>
                 </div>
             `;
             grid.insertAdjacentHTML('beforeend', cardHTML);
         }
 
-        // --- MANUAL SUBMISSION CONTROLLER ---
         function addManualProduct() {
             const title = document.getElementById('pTitle').value.trim();
             const price = document.getElementById('pPrice').value.trim();
             const image = document.getElementById('pImage').value.trim();
             const desc = document.getElementById('pDesc').value.trim();
 
-            if(!title) return alert('Please input a product title identifier.');
+            if(!title) return alert('Please input at least a title identifier.');
 
             appendProductToLayout(title, price, image, desc);
 
-            // Clean form values
             document.getElementById('pTitle').value = '';
             document.getElementById('pPrice').value = '';
             document.getElementById('pImage').value = '';
             document.getElementById('pDesc').value = '';
         }
 
-        // --- AUTOMATED SHOPIFY CSV STREAM CONTROLLER ---
         function handleShopifyCSV(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -156,13 +172,10 @@
             document.getElementById('uploadStatus').innerText = `Syncing Shopify Assets...`;
 
             const reader = new FileReader();
-            reader.onload = function(e) {
-                parseShopifyData(e.target.result);
-            };
+            reader.onload = function(e) { parseShopifyData(e.target.result); };
             reader.readAsText(file);
         }
 
-        // Secure parsing mechanism handles nested quotes/commas smoothly
         const splitCSVCells = (text) => {
             let p = [""], b = [false], i = 0;
             for (let l of text) {
@@ -198,7 +211,6 @@
                 const image = imageIdx !== -1 ? columns[imageIdx].replace(/^"|"$/g, '').trim() : '';
                 const rawDesc = bodyIdx !== -1 ? columns[bodyIdx] : '';
 
-                // Strip standard shopify nested rich HTML text tags elegantly
                 const cleanDesc = rawDesc.replace(/<\/?[^>]+(>|$)/g, "").replace(/^"|"$/g, '').trim();
                 const price = rawPrice ? `₹${parseFloat(rawPrice).toLocaleString()}` : 'Price on Request';
 
@@ -217,7 +229,7 @@
                 loadedCount++;
             }
 
-            document.getElementById('uploadStatus').innerHTML = `Successfully processed <span class="font-bold text-[#242220]">${loadedCount} catalog entries</span>.`;
+            document.getElementById('uploadStatus').innerHTML = `Synced <span class="font-bold text-[#242220]">${loadedCount} Collection Items</span>.`;
         }
     </script>
 </body>
