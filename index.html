@@ -83,7 +83,6 @@
                     <input type="text" id="pTitle" class="p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220]" placeholder="Product Title">
                     <input type="text" id="pPrice" class="p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220]" placeholder="Price (e.g. ₹45,000)">
                     <input type="text" id="pImage" class="sm:col-span-2 p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220]" placeholder="Image Link Address URL">
-                    <textarea id="pDesc" rows="2" class="sm:col-span-2 p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220]" placeholder="Enter item specifications, composition, or custom notes..."></textarea>
                 </div>
                 <button onclick="addManualProduct()" class="w-full bg-[#f4f2ee] text-[#242220] text-xs py-3 rounded uppercase tracking-wider font-semibold hover:bg-[#eaddd3] transition-all border border-[#e2dfda]">
                     + Append Item 
@@ -118,7 +117,7 @@
     </div>
 
     <script>
-        function appendProductToLayout(title, price, image, desc) {
+        function appendProductToLayout(title, price, image) {
             const grid = document.getElementById('catalogGrid');
             const placeholder = document.getElementById('placeholderText');
             if(placeholder) placeholder.remove();
@@ -131,11 +130,10 @@
                          </div>` : 
                         `<div class="w-full h-64 bg-[#f5f4f0] mb-4 flex items-center justify-center text-[10px] uppercase tracking-widest text-stone-400 italic font-medium">Image Not Provided</div>`
                     }
-                    <div class="flex justify-between items-baseline gap-4 mb-2">
+                    <div class="flex justify-between items-baseline gap-4">
                         <h3 class="text-sm font-normal tracking-wide text-[#242220] uppercase serif-title leading-tight">${title}</h3>
                         <span class="text-xs font-semibold text-[#7c756e] whitespace-nowrap">${price ? price : 'Price on Request'}</span>
                     </div>
-                    <p class="text-xs text-stone-500 leading-relaxed font-light text-justify border-t border-[#fdfcfb] pt-2">${desc ? desc : 'Custom specifications available upon inquiry.'}</p>
                 </div>
             `;
             grid.insertAdjacentHTML('beforeend', cardHTML);
@@ -145,16 +143,14 @@
             const title = document.getElementById('pTitle').value.trim();
             const price = document.getElementById('pPrice').value.trim();
             const image = document.getElementById('pImage').value.trim();
-            const desc = document.getElementById('pDesc').value.trim();
 
             if(!title) return alert('Please input at least a title identifier.');
 
-            appendProductToLayout(title, price, image, desc);
+            appendProductToLayout(title, price, image);
 
             document.getElementById('pTitle').value = '';
             document.getElementById('pPrice').value = '';
             document.getElementById('pImage').value = '';
-            document.getElementById('pDesc').value = '';
         }
 
         function handleShopifyCSV(event) {
@@ -166,7 +162,6 @@
             reader.readAsText(file);
         }
 
-        // STATE MACHINE PARSER: Tracks cell structures perfectly even with multi-line HTML text blocks
         function parseCSVToRows(text) {
             let rows = [];
             let currentRow = [];
@@ -179,7 +174,7 @@
 
                 if (char === '"') {
                     if (inQuotes && nextChar === '"') {
-                        currentField += '"'; i++; // Handle escaped quotes inside blocks
+                        currentField += '"'; i++; 
                     } else {
                         inQuotes = !inQuotes;
                     }
@@ -213,7 +208,6 @@
             const headers = rows[0].map(h => h.trim());
             const handleIdx = headers.indexOf('Handle');
             const titleIdx = headers.indexOf('Title');
-            const bodyIdx = headers.indexOf('Body (HTML)');
             const priceIdx = headers.indexOf('Variant Price');
             const imageIdx = headers.indexOf('Image Src');
 
@@ -223,7 +217,6 @@
             for (let i = 1; i < rows.length; i++) {
                 const columns = rows[i];
                 if (columns.length === 0 || !columns[0]) {
-                    // Look down variant asset lines that share the same trailing row logic
                     if (handleIdx !== -1 && columns[handleIdx]) {
                         lastValidHandle = columns[handleIdx].trim();
                     }
@@ -239,42 +232,39 @@
                 const title = titleIdx !== -1 && columns[titleIdx] ? columns[titleIdx].trim() : '';
                 const rawPrice = priceIdx !== -1 ? columns[priceIdx].trim() : '';
                 const image = imageIdx !== -1 ? columns[imageIdx].trim() : '';
-                const rawDesc = bodyIdx !== -1 ? columns[bodyIdx].trim() : '';
 
-                // Strip out complex, nested Shopify description tags and spacing
-                const cleanDesc = rawDesc.replace(/<\/?[^>]+(>|$)/g, "").replace(/\s+/g, " ").trim();
-                const price = rawPrice && !isNaN(rawPrice) && rawPrice !== '0' ? `₹${parseFloat(rawPrice).toLocaleString()}` : '';
+                let price = '';
+                if (rawPrice && !isNaN(rawPrice) && rawPrice.trim() !== '') {
+                    const parsedNum = parseFloat(rawPrice);
+                    if (!isNaN(parsedNum) && parsedNum > 0) {
+                        price = `₹${parsedNum.toLocaleString()}`;
+                    }
+                }
 
                 if (!itemMap[currentHandle]) {
-                    // Only assign properties if they exist on the initial parent line
                     if (title) {
-                        itemMap[currentHandle] = { title, price, image, desc: cleanDesc };
+                        itemMap[currentHandle] = { title, price, image };
                     }
                 } else {
-                    // Accumulate image links from subsequent rows if the parent row was blank
                     if (!itemMap[currentHandle].image && image) {
                         itemMap[currentHandle].image = image;
                     }
                     if (!itemMap[currentHandle].price && price) {
                         itemMap[currentHandle].price = price;
                     }
-                    if (!itemMap[currentHandle].desc && cleanDesc) {
-                        itemMap[currentHandle].desc = cleanDesc;
-                    }
                 }
             }
 
-            // Redraw everything smoothly
             grid.innerHTML = '';
             if(placeholder) placeholder.remove();
             let loadedCount = 0;
 
             for (let key in itemMap) {
                 const item = itemMap[key];
-                if (!item.title) continue; // Skip incomplete asset rows
+                if (!item.title) continue; 
                 
                 const displaysPrice = item.price ? item.price : 'Price on Request';
-                appendProductToLayout(item.title, displaysPrice, item.image, item.desc);
+                appendProductToLayout(item.title, displaysPrice, item.image);
                 loadedCount++;
             }
 
