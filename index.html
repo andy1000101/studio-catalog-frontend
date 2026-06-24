@@ -18,7 +18,6 @@
             font-family: 'Playfair Display', Georgia, serif;
         }
 
-        /* HARDWARE CORRECTION FOR WEB PRINTING: Drops all default browser header/footer markers */
         @media print {
             @page { 
                 size: A4 portrait; 
@@ -53,12 +52,11 @@
 </head>
 <body class="bg-[#fcfbf9] text-[#242220] min-h-screen p-4 md:p-12 flex flex-col items-center">
 
-    <!-- HOME CANVAS DESIGN CONSOLE (Hidden during print) -->
     <div class="no-print w-full max-w-5xl bg-white border border-[#e2dfda] p-8 rounded shadow-sm mb-12">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-[#f0ede9] pb-5 gap-4">
             <div>
                 <h1 class="text-lg uppercase tracking-widest text-[#242220] font-medium serif-title">Catalog Workbench</h1>
-                <p class="text-xs text-stone-400 mt-1">Batch load a raw Shopify CSV export or append individual collection pieces below.</p>
+                <p class="text-xs text-stone-400 mt-1">Robust parser built directly for complex, multi-line Shopify exports.</p>
             </div>
             <button onclick="window.print()" class="bg-[#242220] text-[#fcfbf9] text-xs px-6 py-3 rounded uppercase tracking-widest font-semibold hover:bg-[#3e3a36] transition-colors shadow-sm">
                 Print / Export Catalog
@@ -66,11 +64,10 @@
         </div>
         
         <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
-            <!-- Shopify File Parser -->
             <div class="lg:col-span-2 border-r border-[#f0ede9] pr-0 lg:pr-6 flex flex-col justify-between">
                 <div>
                     <h3 class="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-2">01 / Shopify Sync</h3>
-                    <p class="text-xs text-stone-400 mb-4 font-light leading-relaxed">Drop your native product export sheet here to auto-populate the line-sheet assets grid.</p>
+                    <p class="text-xs text-stone-400 mb-4 font-light leading-relaxed">Drop your native product export sheet here. Handles line-wrapped strings and variants smoothly.</p>
                 </div>
                 <div class="border border-dashed border-[#c2beba] rounded p-6 text-center bg-[#faf9f6] transition-colors hover:border-[#242220] relative min-h-[140px] flex items-center justify-center group">
                     <input type="file" id="csvFile" accept=".csv" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleShopifyCSV(event)">
@@ -80,7 +77,6 @@
                 </div>
             </div>
 
-            <!-- Custom Manual Item Form -->
             <div class="lg:col-span-3">
                 <h3 class="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-3">02 / Custom Spec Addition</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
@@ -96,10 +92,8 @@
         </div>
     </div>
 
-    <!-- THE BRANDED EDITORIAL CANVAS -->
     <div class="print-page w-full max-w-5xl bg-[#fbfaf7] border border-[#eaddd3] p-12 md:p-16 shadow-sm min-h-[297mm] flex flex-col justify-between">
         <div>
-            <!-- Lookbook Header Frame -->
             <div class="border-b border-[#242220] pb-6 mb-12 flex justify-between items-end">
                 <div>
                     <span class="text-[10px] uppercase tracking-[0.25em] text-stone-400 font-bold block mb-1">Curated Portfolio Layout</span>
@@ -110,7 +104,6 @@
                 </div>
             </div>
 
-            <!-- Product Grid -->
             <div id="catalogGrid" class="catalog-grid grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-12">
                 <div id="placeholderText" class="col-span-2 text-center py-24 text-stone-300 font-light text-sm italic tracking-wide">
                     Your collection layout canvas is currently empty. Initialize a Shopify CSV file import or add a manual record block above.
@@ -118,7 +111,6 @@
             </div>
         </div>
 
-        <!-- Footnote Frame -->
         <div class="border-t border-[#e7e5e4] pt-6 mt-16 flex justify-between items-center text-[9px] uppercase tracking-widest text-stone-400 font-semibold">
             <span>© Home Canvas</span>
             <span>Handcrafted Hand-Selected Materials</span>
@@ -143,7 +135,7 @@
                         <h3 class="text-sm font-normal tracking-wide text-[#242220] uppercase serif-title leading-tight">${title}</h3>
                         <span class="text-xs font-semibold text-[#7c756e] whitespace-nowrap">${price ? price : 'Price on Request'}</span>
                     </div>
-                    <p class="text-xs text-stone-500 leading-relaxed font-light text-justify border-t border-[#fdfcfb] pt-2">${desc ? desc : 'Custom material specifications and bespoke configuration modules are available upon studio inquiry.'}</p>
+                    <p class="text-xs text-stone-500 leading-relaxed font-light text-justify border-t border-[#fdfcfb] pt-2">${desc ? desc : 'Custom specifications available upon inquiry.'}</p>
                 </div>
             `;
             grid.insertAdjacentHTML('beforeend', cardHTML);
@@ -168,75 +160,125 @@
         function handleShopifyCSV(event) {
             const file = event.target.files[0];
             if (!file) return;
-
             document.getElementById('uploadStatus').innerText = `Syncing Shopify Assets...`;
-
             const reader = new FileReader();
             reader.onload = function(e) { parseShopifyData(e.target.result); };
             reader.readAsText(file);
         }
 
-        const splitCSVCells = (text) => {
-            let p = [""], b = [false], i = 0;
-            for (let l of text) {
-                if (l === '"') { b[0] = !b[0]; }
-                else if (l === ',' && !b[0]) { p[++i] = ""; }
-                else { p[i] += l; }
+        // STATE MACHINE PARSER: Tracks cell structures perfectly even with multi-line HTML text blocks
+        function parseCSVToRows(text) {
+            let rows = [];
+            let currentRow = [];
+            let currentField = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < text.length; i++) {
+                let char = text[i];
+                let nextChar = text[i+1];
+
+                if (char === '"') {
+                    if (inQuotes && nextChar === '"') {
+                        currentField += '"'; i++; // Handle escaped quotes inside blocks
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    currentRow.push(currentField);
+                    currentField = '';
+                } else if ((char === '\r' || char === '\n') && !inQuotes) {
+                    if (char === '\r' && nextChar === '\n') { i++; }
+                    currentRow.push(currentField);
+                    rows.push(currentRow);
+                    currentRow = [];
+                    currentField = '';
+                } else {
+                    currentField += char;
+                }
             }
-            return p;
+            if (currentRow.length > 0 || currentField !== '') {
+                currentRow.push(currentField);
+                rows.push(currentRow);
+            }
+            return rows;
         }
 
         function parseShopifyData(text) {
             const grid = document.getElementById('catalogGrid');
             const placeholder = document.getElementById('placeholderText');
             
-            // Matches complete lines correctly, wrapping fields containing internal multi-line quotes
-            const lines = text.match(/(".*?"|[^"\r\n]+)(?=\r?\n|$)/g) || [];
-            if (lines.length < 2) return alert("Error processing spreadsheet alignment configuration.");
+            const rows = parseCSVToRows(text);
+            if (rows.length < 2) return alert("Empty or invalid Shopify CSV format.");
 
-            const headers = splitCSVCells(lines[0]).map(h => h.trim().replace(/^"|"$/g, ''));
+            const headers = rows[0].map(h => h.trim());
+            const handleIdx = headers.indexOf('Handle');
             const titleIdx = headers.indexOf('Title');
             const bodyIdx = headers.indexOf('Body (HTML)');
             const priceIdx = headers.indexOf('Variant Price');
             const imageIdx = headers.indexOf('Image Src');
 
             let itemMap = {};
-            let loadedCount = 0;
+            let lastValidHandle = '';
 
-            for (let i = 1; i < lines.length; i++) {
-                const rowText = lines[i].trim();
-                if (!rowText) continue;
-
-                const columns = splitCSVCells(rowText);
-                const rawTitle = columns[titleIdx];
-                if (!rawTitle) continue; 
-
-                const title = rawTitle.replace(/^"|"$/g, '').trim();
-                const rawPrice = priceIdx !== -1 ? columns[priceIdx] : '';
-                const image = imageIdx !== -1 ? columns[imageIdx].replace(/^"|"$/g, '').trim() : '';
-                const rawDesc = bodyIdx !== -1 ? columns[bodyIdx] : '';
-
-                const cleanDesc = rawDesc.replace(/<\/?[^>]+(>|$)/g, "").replace(/\s+/g, " ").replace(/^"|"$/g, '').trim();
-                const price = rawPrice && !isNaN(rawPrice) ? `₹${parseFloat(rawPrice).toLocaleString()}` : 'Price on Request';
-
-                if (itemMap[title]) {
-                    if (!itemMap[title].image && image) itemMap[title].image = image;
-                    continue;
+            for (let i = 1; i < rows.length; i++) {
+                const columns = rows[i];
+                if (columns.length === 0 || !columns[0]) {
+                    // Look down variant asset lines that share the same trailing row logic
+                    if (handleIdx !== -1 && columns[handleIdx]) {
+                        lastValidHandle = columns[handleIdx].trim();
+                    }
+                } else {
+                    if (handleIdx !== -1 && columns[handleIdx]) {
+                        lastValidHandle = columns[handleIdx].trim();
+                    }
                 }
 
-                itemMap[title] = { title, price, image, desc: cleanDesc };
+                const currentHandle = (handleIdx !== -1 && columns[handleIdx]) ? columns[handleIdx].trim() : lastValidHandle;
+                if (!currentHandle) continue;
+
+                const title = titleIdx !== -1 && columns[titleIdx] ? columns[titleIdx].trim() : '';
+                const rawPrice = priceIdx !== -1 ? columns[priceIdx].trim() : '';
+                const image = imageIdx !== -1 ? columns[imageIdx].trim() : '';
+                const rawDesc = bodyIdx !== -1 ? columns[bodyIdx].trim() : '';
+
+                // Strip out complex, nested Shopify description tags and spacing
+                const cleanDesc = rawDesc.replace(/<\/?[^>]+(>|$)/g, "").replace(/\s+/g, " ").trim();
+                const price = rawPrice && !isNaN(rawPrice) && rawPrice !== '0' ? `₹${parseFloat(rawPrice).toLocaleString()}` : '';
+
+                if (!itemMap[currentHandle]) {
+                    // Only assign properties if they exist on the initial parent line
+                    if (title) {
+                        itemMap[currentHandle] = { title, price, image, desc: cleanDesc };
+                    }
+                } else {
+                    // Accumulate image links from subsequent rows if the parent row was blank
+                    if (!itemMap[currentHandle].image && image) {
+                        itemMap[currentHandle].image = image;
+                    }
+                    if (!itemMap[currentHandle].price && price) {
+                        itemMap[currentHandle].price = price;
+                    }
+                    if (!itemMap[currentHandle].desc && cleanDesc) {
+                        itemMap[currentHandle].desc = cleanDesc;
+                    }
+                }
             }
 
+            // Redraw everything smoothly
             grid.innerHTML = '';
             if(placeholder) placeholder.remove();
+            let loadedCount = 0;
 
             for (let key in itemMap) {
                 const item = itemMap[key];
-                appendProductToLayout(item.title, item.price, item.image, item.desc);
+                if (!item.title) continue; // Skip incomplete asset rows
+                
+                const displaysPrice = item.price ? item.price : 'Price on Request';
+                appendProductToLayout(item.title, displaysPrice, item.image, item.desc);
                 loadedCount++;
             }
 
-            document.getElementById('uploadStatus').innerHTML = `Synced <span class="font-bold text-[#242220]">${loadedCount} Collection Items</span>.`;
+            document.getElementById('uploadStatus').innerHTML = `Processed <span class="font-bold text-[#242220]">${loadedCount} parent collections</span>.`;
         }
     </script>
 </body>
