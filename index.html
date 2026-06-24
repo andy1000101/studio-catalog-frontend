@@ -187,7 +187,11 @@
         }
 
         function parseShopifyData(text) {
-            const lines = text.split(/\r?\n/);
+            const grid = document.getElementById('catalogGrid');
+            const placeholder = document.getElementById('placeholderText');
+            
+            // Matches complete lines correctly, wrapping fields containing internal multi-line quotes
+            const lines = text.match(/(".*?"|[^"\r\n]+)(?=\r?\n|$)/g) || [];
             if (lines.length < 2) return alert("Error processing spreadsheet alignment configuration.");
 
             const headers = splitCSVCells(lines[0]).map(h => h.trim().replace(/^"|"$/g, ''));
@@ -200,9 +204,10 @@
             let loadedCount = 0;
 
             for (let i = 1; i < lines.length; i++) {
-                if (!lines[i].trim()) continue;
+                const rowText = lines[i].trim();
+                if (!rowText) continue;
 
-                const columns = splitCSVCells(lines[i]);
+                const columns = splitCSVCells(rowText);
                 const rawTitle = columns[titleIdx];
                 if (!rawTitle) continue; 
 
@@ -211,8 +216,8 @@
                 const image = imageIdx !== -1 ? columns[imageIdx].replace(/^"|"$/g, '').trim() : '';
                 const rawDesc = bodyIdx !== -1 ? columns[bodyIdx] : '';
 
-                const cleanDesc = rawDesc.replace(/<\/?[^>]+(>|$)/g, "").replace(/^"|"$/g, '').trim();
-                const price = rawPrice ? `₹${parseFloat(rawPrice).toLocaleString()}` : 'Price on Request';
+                const cleanDesc = rawDesc.replace(/<\/?[^>]+(>|$)/g, "").replace(/\s+/g, " ").replace(/^"|"$/g, '').trim();
+                const price = rawPrice && !isNaN(rawPrice) ? `₹${parseFloat(rawPrice).toLocaleString()}` : 'Price on Request';
 
                 if (itemMap[title]) {
                     if (!itemMap[title].image && image) itemMap[title].image = image;
@@ -222,7 +227,9 @@
                 itemMap[title] = { title, price, image, desc: cleanDesc };
             }
 
-            document.getElementById('catalogGrid').innerHTML = '';
+            grid.innerHTML = '';
+            if(placeholder) placeholder.remove();
+
             for (let key in itemMap) {
                 const item = itemMap[key];
                 appendProductToLayout(item.title, item.price, item.image, item.desc);
