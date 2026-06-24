@@ -3,64 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio Catalog Generator</title>
+    <title>Studio Catalog Workbench</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* CSS specifically configured to make browsers print perfect A4 pages */
         @media print {
             body { background: white; color: black; padding: 0; margin: 0; }
             .no-print { display: none !important; }
-            .print-page { 
-                padding: 0 !important; 
-                margin: 0 !important; 
-                box-shadow: none !important; 
-                max-width: 100% !important;
-            }
-            .catalog-grid {
-                display: grid !important;
-                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                gap: 2rem !important;
-            }
-            .product-card { 
-                page-break-inside: avoid !important; 
-                break-inside: avoid !important;
-            }
+            .print-page { padding: 0 !important; margin: 0 !important; box-shadow: none !important; max-width: 100% !important; }
+            .catalog-grid { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 2rem !important; }
+            .product-card { page-break-inside: avoid !important; break-inside: avoid !important; }
             @page { size: A4 portrait; margin: 20mm; }
         }
     </style>
 </head>
 <body class="bg-stone-100 text-stone-900 min-h-screen p-4 md:p-12 font-sans flex flex-col items-center">
 
-    <div class="no-print w-full max-w-4xl bg-white border border-stone-200 p-6 rounded-lg shadow-sm mb-12">
-        <h1 class="text-xl font-light tracking-tight mb-1">Studio Catalog Builder</h1>
-        <p class="text-xs text-stone-400 mb-6">Fill in the product details below. Click "Add Product" to build your grid, then hit "Print/Save Catalog".</p>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+    <div class="no-print w-full max-w-4xl bg-white border border-stone-200 p-8 rounded-lg shadow-sm mb-12">
+        <div class="flex justify-between items-start mb-6 border-b border-stone-100 pb-4">
             <div>
-                <label class="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-1">Product Title</label>
-                <input type="text" id="pTitle" class="w-full p-2.5 border border-stone-200 text-sm rounded focus:outline-none focus:border-stone-900" placeholder="e.g., Totem Light No. 1">
+                <h1 class="text-xl font-light tracking-tight">Studio Catalog Dashboard</h1>
+                <p class="text-xs text-stone-400 mt-0.5">Build linesheets effortlessly using automated Shopify batch imports or simple custom manual forms.</p>
             </div>
-            <div>
-                <label class="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-1">Price / Variant</label>
-                <input type="text" id="pPrice" class="w-full p-2.5 border border-stone-200 text-sm rounded focus:outline-none focus:border-stone-900" placeholder="e.g., ₹45,000 / $550">
-            </div>
-            <div class="md:col-span-2">
-                <label class="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-1">Product Image Link (URL)</label>
-                <input type="text" id="pImage" class="w-full p-2.5 border border-stone-200 text-sm rounded focus:outline-none focus:border-stone-900" placeholder="Paste image address from your website">
-            </div>
-            <div class="md:col-span-2">
-                <label class="block text-xs font-medium text-stone-500 uppercase tracking-wider mb-1">Description / Specifications</label>
-                <textarea id="pDesc" rows="3" class="w-full p-2.5 border border-stone-200 text-sm rounded focus:outline-none focus:border-stone-900" placeholder="Enter materials, dimensions, or details..."></textarea>
-            </div>
+            <button onclick="window.print()" class="bg-stone-900 text-white text-xs px-5 py-2.5 rounded font-medium hover:bg-stone-800 transition-colors shadow-sm">
+                Print / Save PDF Catalog
+            </button>
         </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <div class="lg:col-span-2 border-r border-stone-100 pr-0 lg:pr-6 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-stone-500 mb-2">Option A: Shopify Sync</h3>
+                    <p class="text-xs text-stone-400 mb-4">Batch load your entire studio list directly using an unedited Shopify CSV export file.</p>
+                </div>
+                
+                <div class="border-2 border-dashed border-stone-200 rounded p-6 text-center bg-stone-50 transition-colors hover:border-stone-400 relative min-h-[140px] flex items-center justify-center">
+                    <input type="file" id="csvFile" accept=".csv" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleShopifyCSV(event)">
+                    <div id="uploadStatus" class="text-xs text-stone-500 font-light leading-relaxed">
+                        <span class="font-normal text-stone-900 underline block mb-1">Upload Shopify CSV</span> or drag file block here
+                    </div>
+                </div>
+            </div>
 
-        <div class="flex gap-3">
-            <button onclick="addProduct()" class="flex-1 bg-stone-900 text-white text-sm py-2.5 rounded font-medium hover:bg-stone-800 transition-colors">
-                Add Product to Catalog
-            </button>
-            <button onclick="window.print()" class="bg-stone-200 text-stone-800 text-sm px-6 py-2.5 rounded font-medium hover:bg-stone-300 transition-colors">
-                Print / Save PDF
-            </button>
+            <div class="lg:col-span-3">
+                <h3 class="text-xs font-semibold uppercase tracking-wider text-stone-500 mb-3">Option B: Manual Entry addition</h3>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                    <div>
+                        <input type="text" id="pTitle" class="w-full p-2 border border-stone-200 text-xs rounded focus:outline-none focus:border-stone-900" placeholder="Product Title">
+                    </div>
+                    <div>
+                        <input type="text" id="pPrice" class="w-full p-2 border border-stone-200 text-xs rounded focus:outline-none focus:border-stone-900" placeholder="Price (e.g. $1,200)">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <input type="text" id="pImage" class="w-full p-2 border border-stone-200 text-xs rounded focus:outline-none focus:border-stone-900" placeholder="Paste Live Image Link Address (URL)">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <textarea id="pDesc" rows="2" class="w-full p-2 border border-stone-200 text-xs rounded focus:outline-none focus:border-stone-900" placeholder="Materials, dimensions, context notes..."></textarea>
+                    </div>
+                </div>
+
+                <button onclick="addManualProduct()" class="w-full bg-stone-100 text-stone-800 text-xs py-2 rounded font-medium hover:bg-stone-200 transition-colors border border-stone-200">
+                    + Append Item to Layout
+                </button>
+            </div>
         </div>
     </div>
 
@@ -70,50 +75,124 @@
                 <span class="text-xs uppercase tracking-widest text-stone-400 font-medium">Product Overview</span>
                 <h2 class="text-3xl font-light tracking-tight mt-1">Studio Collection</h2>
             </div>
-            <span class="text-xs uppercase tracking-widest text-stone-500 font-medium">Confidential Line-Sheet</span>
+            <span class="text-xs uppercase tracking-widest text-stone-500 font-medium">Line-Sheet Portfolio</span>
         </div>
 
         <div id="catalogGrid" class="catalog-grid grid grid-cols-1 sm:grid-cols-2 gap-12">
-            <div id="placeholderText" class="col-span-2 text-center py-12 text-stone-300 font-light text-sm italic">
-                No products added yet. Use the dashboard panel above to construct your catalog sheet view.
+            <div id="placeholderText" class="col-span-2 text-center py-16 text-stone-300 font-light text-sm italic">
+                No collection lines loaded. Drop a Shopify CSV file or input an item manually above to populate your layout.
             </div>
         </div>
     </div>
 
     <script>
-        function addProduct() {
+        // Common layout renderer function shared across both data input streams
+        function appendProductToLayout(title, price, image, desc) {
+            const grid = document.getElementById('catalogGrid');
+            const placeholder = document.getElementById('placeholderText');
+            if(placeholder) placeholder.remove();
+
+            const cardHTML = `
+                <div class="product-card flex flex-col border-b border-stone-100 pb-6">
+                    ${image ? `<div class="w-full h-64 bg-stone-50 mb-4 overflow-hidden"><img src="${image}" class="w-full h-full object-cover"></div>` : '<div class="w-full h-64 bg-stone-100 mb-4 flex items-center justify-center text-xs text-stone-400 italic">No asset image loaded</div>'}
+                    <div class="flex justify-between items-baseline mb-2">
+                        <h3 class="text-lg font-normal tracking-tight">${title}</h3>
+                        <span class="text-sm font-medium text-stone-600">${price ? price : 'Price on Request'}</span>
+                    </div>
+                    <p class="text-xs text-stone-500 leading-relaxed font-light line-clamp-3">${desc ? desc : 'Custom spatial modifications or specifications available upon studio inquiry.'}</p>
+                </div>
+            `;
+            grid.insertAdjacentHTML('beforeend', cardHTML);
+        }
+
+        // --- HANDLERS FOR MANUAL INPUT ---
+        function addManualProduct() {
             const title = document.getElementById('pTitle').value.trim();
             const price = document.getElementById('pPrice').value.trim();
             const image = document.getElementById('pImage').value.trim();
             const desc = document.getElementById('pDesc').value.trim();
 
-            if(!title) return alert('Please enter at least a product title.');
+            if(!title) return alert('Please input at least a product title.');
 
-            // Remove placeholder if it exists
-            const placeholder = document.getElementById('placeholderText');
-            if(placeholder) placeholder.remove();
+            appendProductToLayout(title, price, image, desc);
 
-            const grid = document.getElementById('catalogGrid');
-
-            // Generate clean, structured product markup
-            const productHTML = `
-                <div class="product-card flex flex-col border-b border-stone-100 pb-6">
-                    ${image ? `<div class="w-full h-64 bg-stone-50 mb-4 overflow-hidden"><img src="${image}" class="w-full h-full object-cover"></div>` : '<div class="w-full h-64 bg-stone-100 mb-4 flex items-center justify-center text-xs text-stone-400 italic">No image provided</div>'}
-                    <div class="flex justify-between items-baseline mb-2">
-                        <h3 class="text-lg font-normal tracking-tight">${title}</h3>
-                        <span class="text-sm font-medium text-stone-600">${price ? price : 'Price on Request'}</span>
-                    </div>
-                    <p class="text-xs text-stone-500 leading-relaxed font-light">${desc ? desc : 'Custom material specifications available upon request.'}</p>
-                </div>
-            `;
-
-            grid.insertAdjacentHTML('beforeend', productHTML);
-
-            // Reset input values smoothly for the next item
+            // Clear inputs for ease of next manual item placement
             document.getElementById('pTitle').value = '';
             document.getElementById('pPrice').value = '';
             document.getElementById('pImage').value = '';
             document.getElementById('pDesc').value = '';
+        }
+
+        // --- HANDLERS FOR AUTOMATED SHOPIFY CSV ---
+        function handleShopifyCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            document.getElementById('uploadStatus').innerText = `Loading Manifest...`;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                parseShopifyData(e.target.result);
+            };
+            reader.readAsText(file);
+        }
+
+        // CSV parsing algorithm preserving commas encased inside string fields safely
+        const splitCSVCells = (text) => {
+            let p = [""], b = [false], i = 0;
+            for (let l of text) {
+                if (l === '"') { b[0] = !b[0]; }
+                else if (l === ',' && !b[0]) { p[++i] = ""; }
+                else { p[i] += l; }
+            }
+            return p;
+        }
+
+        function parseShopifyData(text) {
+            const lines = text.split(/\r?\n/);
+            if (lines.length < 2) return alert("Empty structure configuration parsing file error.");
+
+            const headers = splitCSVCells(lines[0]).map(h => h.trim().replace(/^"|"$/g, ''));
+            const titleIdx = headers.indexOf('Title');
+            const bodyIdx = headers.indexOf('Body (HTML)');
+            const priceIdx = headers.indexOf('Variant Price');
+            const imageIdx = headers.indexOf('Image Src');
+
+            let itemMap = {};
+            let loadedCount = 0;
+
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+
+                const columns = splitCSVCells(lines[i]);
+                const rawTitle = columns[titleIdx];
+                if (!rawTitle) continue; // Skip product row variations grouping under parent item asset
+
+                const title = rawTitle.replace(/^"|"$/g, '').trim();
+                const rawPrice = priceIdx !== -1 ? columns[priceIdx] : '';
+                const image = imageIdx !== -1 ? columns[imageIdx].replace(/^"|"$/g, '').trim() : '';
+                const rawDesc = bodyIdx !== -1 ? columns[bodyIdx] : '';
+
+                const cleanDesc = rawDesc.replace(/<\/?[^>]+(>|$)/g, "").replace(/^"|"$/g, '').trim();
+                const price = rawPrice ? `$${parseFloat(rawPrice).toLocaleString()}` : 'Price on Request';
+
+                if (itemMap[title]) {
+                    if (!itemMap[title].image && image) itemMap[title].image = image;
+                    continue;
+                }
+
+                itemMap[title] = { title, price, image, desc: cleanDesc };
+            }
+
+            // Flush prior entries and append everything programmatically
+            document.getElementById('catalogGrid').innerHTML = '';
+            for (let key in itemMap) {
+                const item = itemMap[key];
+                appendProductToLayout(item.title, item.price, item.image, item.desc);
+                loadedCount++;
+            }
+
+            document.getElementById('uploadStatus').innerHTML = `Synced <span class="font-bold text-stone-900">${loadedCount} items</span> smoothly.`;
         }
     </script>
 </body>
