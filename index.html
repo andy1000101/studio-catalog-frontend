@@ -77,23 +77,30 @@
                 </div>
             </div>
 
-            <div class="lg:col-span-3">
-                <h3 class="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-3">02 / Custom Product Addition</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                    <input type="text" id="pTitle" class="p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220]" placeholder="Product Title">
-                    <input type="text" id="pPrice" class="p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220]" placeholder="Price (e.g. ₹45,000)">
-                    <input type="text" id="pImage" class="sm:col-span-2 p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220]" placeholder="Image Link Address URL">
+            <div class="lg:col-span-3 flex flex-col gap-5">
+                <div>
+                    <h3 class="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-3">02 / Custom Product Addition</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                        <input type="text" id="pTitle" class="p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220]" placeholder="Product Title">
+                        <input type="text" id="pPrice" class="p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220]" placeholder="Price (e.g. ₹45,000)">
+                        <input type="text" id="pImage" class="sm:col-span-2 p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220]" placeholder="Image Link Address URL">
+                    </div>
+                    <button onclick="addManualProduct()" class="w-full bg-[#f4f2ee] text-[#242220] text-xs py-2.5 rounded uppercase tracking-wider font-semibold hover:bg-[#eaddd3] transition-all border border-[#e2dfda]">
+                        + Append Item 
+                    </button>
                 </div>
-                <button onclick="addManualProduct()" class="w-full bg-[#f4f2ee] text-[#242220] text-xs py-3 rounded uppercase tracking-wider font-semibold hover:bg-[#eaddd3] transition-all border border-[#e2dfda]">
-                    + Append Item 
-                </button>
+
+                <div class="border-t border-[#f0ede9] pt-4">
+                    <h3 class="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-2">03 / Collection Overview Description</h3>
+                    <textarea id="collectionOverviewInput" rows="2" class="w-full p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220] resize-none" placeholder="Enter collection statement, craftsmanship narratives, or curation background details..." oninput="updateCollectionOverview()"></textarea>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="print-page w-full max-w-5xl bg-[#fbfaf7] border border-[#eaddd3] p-12 md:p-16 shadow-sm min-h-[297mm] flex flex-col justify-between">
         <div>
-            <div class="border-b border-[#242220] pb-6 mb-12 flex justify-between items-end">
+            <div class="border-b border-[#242220] pb-6 mb-8 flex justify-between items-end">
                 <div>
                     <span class="text-[10px] uppercase tracking-[0.25em] text-stone-400 font-bold block mb-1">HOME CANVAS</span>
                     <h2 class="text-2xl tracking-wide text-[#242220] serif-title font-light uppercase">Catalogue</h2>
@@ -101,6 +108,10 @@
                 <div class="text-right">
                     <span class="text-[10px] uppercase tracking-[0.15em] text-[#7c756e] font-semibold block">Furniture | Lighting | Decor</span>
                 </div>
+            </div>
+
+            <div id="collectionOverviewContainer" class="hidden mb-12 border-b border-[#f0ede9] pb-8">
+                <p id="collectionOverviewText" class="text-xs text-stone-600 font-light leading-relaxed max-w-3xl tracking-wide text-justify italic"></p>
             </div>
 
             <div id="catalogGrid" class="catalog-grid grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-12">
@@ -117,6 +128,21 @@
     </div>
 
     <script>
+        // Update collection text narrative statement instantly
+        function updateCollectionOverview() {
+            const inputVal = document.getElementById('collectionOverviewInput').value.trim();
+            const container = document.getElementById('collectionOverviewContainer');
+            const targetText = document.getElementById('collectionOverviewText');
+
+            if (inputVal) {
+                targetText.innerText = inputVal;
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+                targetText.innerText = '';
+            }
+        }
+
         function appendProductToLayout(title, price, image) {
             const grid = document.getElementById('catalogGrid');
             const placeholder = document.getElementById('placeholderText');
