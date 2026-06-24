@@ -25,7 +25,7 @@
             }
             html, body {
                 background: #ffffff !important;
-                color: #242220 !important;
+                color: #1c1b1a !important;
                 padding: 0 !important;
                 margin: 0 !important;
             }
@@ -46,74 +46,84 @@
             .product-card { 
                 page-break-inside: avoid !important; 
                 break-inside: avoid !important; 
+                background: #fbfaf7 !important;
+                border: 1px solid #eae6df !important;
             }
         }
     </style>
 </head>
-<body class="bg-[#fcfbf9] text-[#242220] min-h-screen p-4 md:p-12 flex flex-col items-center">
+<body class="bg-[#fcfbf9] text-[#1c1b1a] min-h-screen p-4 md:p-12 flex flex-col items-center">
 
+    <!-- CONTROL WORKBENCH PANEL -->
     <div class="no-print w-full max-w-5xl bg-white border border-[#e2dfda] p-8 rounded shadow-sm mb-12">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-[#f0ede9] pb-5 gap-4">
             <div>
-                <h1 class="text-lg uppercase tracking-widest text-[#242220] font-medium serif-title">Catalog Workbench</h1>
+                <h1 class="text-lg uppercase tracking-widest text-[#1c1b1a] font-medium serif-title">Catalog Workbench</h1>
                 <p class="text-xs text-stone-400 mt-1">Robust parser built directly for complex, multi-line Shopify exports.</p>
             </div>
-            <button onclick="window.print()" class="bg-[#242220] text-[#fcfbf9] text-xs px-6 py-3 rounded uppercase tracking-widest font-semibold hover:bg-[#3e3a36] transition-colors shadow-sm">
+            <button onclick="window.print()" class="bg-[#1c1b1a] text-[#fcfbf9] text-xs px-6 py-3 rounded uppercase tracking-widest font-semibold hover:bg-[#3e3a36] transition-colors shadow-sm">
                 Print / Export Catalog
             </button>
         </div>
         
         <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <!-- Shopify File Drop Box -->
             <div class="lg:col-span-2 border-r border-[#f0ede9] pr-0 lg:pr-6 flex flex-col justify-between">
                 <div>
                     <h3 class="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-2">01 / Shopify Sync</h3>
                     <p class="text-xs text-stone-400 mb-4 font-light leading-relaxed">Drop your native product export sheet here. Handles line-wrapped strings and variants smoothly.</p>
                 </div>
-                <div class="border border-dashed border-[#c2beba] rounded p-6 text-center bg-[#faf9f6] transition-colors hover:border-[#242220] relative min-h-[140px] flex items-center justify-center group">
+                <div class="border border-dashed border-[#c2beba] rounded p-6 text-center bg-[#faf9f6] transition-colors hover:border-[#1c1b1a] relative min-h-[140px] flex items-center justify-center group">
                     <input type="file" id="csvFile" accept=".csv" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleShopifyCSV(event)">
-                    <div id="uploadStatus" class="text-xs text-stone-500 font-light group-hover:text-[#242220] transition-colors">
-                        <span class="font-normal text-[#242220] underline block mb-1">Upload Product CSV</span> or drop asset sheet
+                    <div id="uploadStatus" class="text-xs text-stone-500 font-light group-hover:text-[#1c1b1a] transition-colors">
+                        <span class="font-normal text-[#1c1b1a] underline block mb-1">Upload Product CSV</span> or drop asset sheet
                     </div>
                 </div>
             </div>
 
+            <!-- Custom Manual Asset Grid Injection -->
             <div class="lg:col-span-3 flex flex-col gap-5">
                 <div>
                     <h3 class="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-3">02 / Custom Product Addition</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                        <input type="text" id="pTitle" class="p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220]" placeholder="Product Title">
-                        <input type="text" id="pPrice" class="p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220]" placeholder="Price (e.g. ₹45,000)">
-                        <input type="text" id="pImage" class="sm:col-span-2 p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220]" placeholder="Image Link Address URL">
+                        <input type="text" id="pTitle" class="p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#1c1b1a]" placeholder="Product Title">
+                        <input type="text" id="pPrice" class="p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#1c1b1a]" placeholder="Price (e.g. ₹45,000)">
+                        <input type="text" id="pImage" class="sm:col-span-2 p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#1c1b1a]" placeholder="Image Link Address URL">
                     </div>
-                    <button onclick="addManualProduct()" class="w-full bg-[#f4f2ee] text-[#242220] text-xs py-2.5 rounded uppercase tracking-wider font-semibold hover:bg-[#eaddd3] transition-all border border-[#e2dfda]">
+                    <button onclick="addManualProduct()" class="w-full bg-[#f4f2ee] text-[#1c1b1a] text-xs py-2.5 rounded uppercase tracking-wider font-semibold hover:bg-[#eaddd3] transition-all border border-[#e2dfda]">
                         + Append Item 
                     </button>
                 </div>
 
+                <!-- Collection Macro Statement Box Injection -->
                 <div class="border-t border-[#f0ede9] pt-4">
                     <h3 class="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-2">03 / Collection Overview Description</h3>
-                    <textarea id="collectionOverviewInput" rows="2" class="w-full p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#242220] resize-none" placeholder="Enter collection statement, craftsmanship narratives, or curation background details..." oninput="updateCollectionOverview()"></textarea>
+                    <textarea id="collectionOverviewInput" rows="2" class="w-full p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#1c1b1a] resize-none" placeholder="Enter collection statement, craftsmanship narratives, or curation background details..." oninput="updateCollectionOverview()"></textarea>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="print-page w-full max-w-5xl bg-[#fbfaf7] border border-[#eaddd3] p-12 md:p-16 shadow-sm min-h-[297mm] flex flex-col justify-between">
+    <!-- THE BRANDED EDITORIAL CANVAS FRAME -->
+    <div class="print-page w-full max-w-5xl bg-[#fcfbf9] border border-[#eaddd3] p-12 md:p-16 shadow-sm min-h-[297mm] flex flex-col justify-between">
         <div>
-            <div class="border-b border-[#242220] pb-6 mb-8 flex justify-between items-end">
+            <!-- Header Frame Block -->
+            <div class="border-b-2 border-[#1c1b1a] pb-6 mb-8 flex justify-between items-end">
                 <div>
-                    <span class="text-[10px] uppercase tracking-[0.25em] text-stone-400 font-bold block mb-1">HOME CANVAS</span>
-                    <h2 class="text-2xl tracking-wide text-[#242220] serif-title font-light uppercase">Catalogue</h2>
+                    <span class="text-[10px] uppercase tracking-[0.3em] text-stone-400 font-bold block mb-1">HOME CANVAS</span>
+                    <h2 class="text-2xl tracking-wider text-[#1c1b1a] serif-title font-light uppercase">Catalogue</h2>
                 </div>
                 <div class="text-right">
                     <span class="text-[10px] uppercase tracking-[0.15em] text-[#7c756e] font-semibold block">Furniture | Lighting | Decor</span>
                 </div>
             </div>
 
+            <!-- Dynamic Collection Narrative Statement Block -->
             <div id="collectionOverviewContainer" class="hidden mb-12 border-b border-[#f0ede9] pb-8">
                 <p id="collectionOverviewText" class="text-xs text-stone-600 font-light leading-relaxed max-w-3xl tracking-wide text-justify italic"></p>
             </div>
 
+            <!-- Product Display Matrix Grid -->
             <div id="catalogGrid" class="catalog-grid grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-12">
                 <div id="placeholderText" class="col-span-2 text-center py-24 text-stone-300 font-light text-sm italic tracking-wide">
                     Your collection layout canvas is currently empty. Initialize a Shopify CSV file import or add a manual record block above.
@@ -121,6 +131,7 @@
             </div>
         </div>
 
+        <!-- Footnote Segment Frame -->
         <div class="border-t border-[#e7e5e4] pt-6 mt-16 flex justify-between items-center text-[9px] uppercase tracking-widest text-stone-400 font-semibold">
             <span>Home Canvas</span>
             <span>Bespoke Furniture and Lighting Available On Request</span>
@@ -128,7 +139,6 @@
     </div>
 
     <script>
-        // Update collection text narrative statement instantly
         function updateCollectionOverview() {
             const inputVal = document.getElementById('collectionOverviewInput').value.trim();
             const container = document.getElementById('collectionOverviewContainer');
@@ -149,15 +159,15 @@
             if(placeholder) placeholder.remove();
 
             const cardHTML = `
-                <div class="product-card flex flex-col bg-white p-5 border border-[#eae6df] rounded shadow-[0_4px_12px_rgba(0,0,0,0.01)]">
+                <div class="product-card flex flex-col bg-[#fbfaf7] p-5 border border-[#eae6df] rounded shadow-[0_4px_12px_rgba(0,0,0,0.01)] transition-all">
                     ${image ? 
-                        `<div class="w-full h-64 bg-[#fcfbf9] overflow-hidden mb-4 rounded-sm border border-[#f5f4f0]">
+                        `<div class="w-full h-64 bg-white overflow-hidden mb-4 rounded-sm border border-[#f5f4f0]">
                             <img src="${image}" class="w-full h-full object-cover" crossorigin="anonymous">
                          </div>` : 
                         `<div class="w-full h-64 bg-[#f5f4f0] mb-4 flex items-center justify-center text-[10px] uppercase tracking-widest text-stone-400 italic font-medium">Image Not Provided</div>`
                     }
-                    <div class="flex justify-between items-baseline gap-4">
-                        <h3 class="text-sm font-normal tracking-wide text-[#242220] uppercase serif-title leading-tight">${title}</h3>
+                    <div class="flex justify-between items-baseline gap-4 mt-1">
+                        <h3 class="text-sm font-normal tracking-wide text-[#1c1b1a] uppercase serif-title leading-tight">${title}</h3>
                         <span class="text-xs font-semibold text-[#7c756e] whitespace-nowrap">${price ? price : 'Price on Request'}</span>
                     </div>
                 </div>
@@ -294,7 +304,7 @@
                 loadedCount++;
             }
 
-            document.getElementById('uploadStatus').innerHTML = `Processed <span class="font-bold text-[#242220]">${loadedCount} parent collections</span>.`;
+            document.getElementById('uploadStatus').innerHTML = `Processed <span class="font-bold text-[#1c1b1a]">${loadedCount} parent collections</span>.`;
         }
     </script>
 </body>
