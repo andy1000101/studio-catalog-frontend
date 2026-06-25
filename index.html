@@ -26,7 +26,7 @@
         @media print {
             @page { 
                 size: A4 portrait; 
-                margin: 20mm 20mm 25mm 20mm; /* Deep bottom margin creates a defensive safe zone */
+                margin: 20mm 20mm 35mm 20mm; /* Deep margin acts as a strict firewall for product content */
             }
             html, body {
                 background: #ffffff !important;
@@ -56,24 +56,25 @@
                 break-inside: avoid !important; 
                 background: #fbfaf7 !important;
                 border: 1px solid #eae6df !important;
-                margin-bottom: 0.5rem;
+                margin-bottom: 0px !important;
             }
 
-            /* FIX FOR OVERLAP (image_20b74a.png) */
+            /* FIX FOR CLIPPING IN image_20c24d.png */
             .inline-footer {
-                display: none !important; /* Removes layout duplicate at document base */
+                display: none !important; 
             }
             
             .print-footer-repeater {
                 display: block !important;
                 position: fixed !important;
-                bottom: 0 !important; /* Pin precisely to the floor of the safe print zone margin */
+                bottom: -25mm !important; /* Pulls footer clean down into the empty page margin allocation */
                 left: 0 !important;
                 right: 0 !important;
                 width: 100% !important;
                 height: auto !important;
-                background: #ffffff !important;
+                background: transparent !important;
                 z-index: 9999;
+                page-break-after: avoid !important;
             }
         }
     </style>
@@ -150,7 +151,7 @@
             </div>
 
             <!-- Product Display Matrix Grid -->
-            <div id="catalogGrid" class="catalog-grid grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-12 pb-16">
+            <div id="catalogGrid" class="catalog-grid grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-12">
                 <div id="placeholderText" class="col-span-2 text-center py-24 text-stone-300 font-light text-sm italic tracking-wide">
                     Your collection layout canvas is currently empty. Initialize a Shopify CSV file import or add a manual record block above.
                 </div>
@@ -158,7 +159,7 @@
         </div>
 
         <!-- STABLE MULTI-PAGE PRINT STAMP -->
-        <div class="print-footer-repeater border-t border-[#e7e5e4] pt-4 text-[9px] uppercase tracking-widest text-stone-400 font-semibold bg-white">
+        <div class="print-footer-repeater border-t border-[#e7e5e4] pt-4 text-[9px] uppercase tracking-widest text-stone-400 font-semibold">
             <div class="flex justify-between items-center bg-white pb-2">
                 <span>Home Canvas</span>
                 <span>Contact Us: hello@homecanvas.com | +91 9591736665</span>
@@ -223,7 +224,6 @@
             document.getElementById('pImage').value = '';
         }
 
-        // Shopify CSV Parsing Scripts remain unchanged
         function handleShopifyCSV(event) {
             const file = event.target.files[0];
             if (!file) return;
