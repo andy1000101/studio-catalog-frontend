@@ -21,7 +21,8 @@
         @media print {
             @page { 
                 size: A4 portrait; 
-                margin: 15mm 15mm 15mm 15mm;
+                /* Zero out the physical browser margin box to eliminate the hard white border */
+                margin: 0mm !important; 
             }
             html, body {
                 background: #fcfbf9 !important;
@@ -32,13 +33,16 @@
             .no-print { display: none !important; }
             
             .print-page { 
-                padding: 0 !important; 
+                /* Inject the real structural breathing room securely inside the printable page canvas frame */
+                padding: 15mm 15mm 10mm 15mm !important; 
                 margin: 0 !important; 
                 box-shadow: none !important; 
                 max-width: 100% !important; 
+                min-height: 100vh !important;
                 background: #fcfbf9 !important; 
                 border: none !important;
                 display: block !important;
+                box-sizing: border-box !important;
             }
             .catalog-grid { 
                 display: grid !important; 
@@ -53,12 +57,14 @@
             }
             
             .page-footer-space {
-                height: 50px;
+                height: 60px;
             }
             .page-footer-container {
                 position: fixed;
-                bottom: 0;
-                width: 100%;
+                bottom: 12mm; /* Lifted up slightly away from the absolute edge of physical paper sheet sheets */
+                left: 15mm;
+                right: 15mm;
+                width: calc(100% - 30mm);
                 background: #fcfbf9 !important;
             }
         }
@@ -66,6 +72,7 @@
 </head>
 <body class="bg-[#fcfbf9] text-[#1c1b1a] min-h-screen p-4 md:p-12 flex flex-col items-center">
 
+    <!-- CONTROL WORKBENCH PANEL -->
     <div class="no-print w-full max-w-5xl bg-white border border-[#e2dfda] p-8 rounded shadow-sm mb-12">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-[#f0ede9] pb-5 gap-4">
             <div>
@@ -78,6 +85,7 @@
         </div>
         
         <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <!-- Shopify File Drop Box -->
             <div class="lg:col-span-2 border-r border-[#f0ede9] pr-0 lg:pr-6 flex flex-col justify-between">
                 <div>
                     <h3 class="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-2">01 / Shopify Sync</h3>
@@ -91,6 +99,7 @@
                 </div>
             </div>
 
+            <!-- Custom Manual Asset Grid Injection -->
             <div class="lg:col-span-3 flex flex-col gap-5">
                 <div>
                     <h3 class="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-3">02 / Custom Product Addition</h3>
@@ -104,6 +113,7 @@
                     </button>
                 </div>
 
+                <!-- Collection Macro Statement Box Injection -->
                 <div class="border-t border-[#f0ede9] pt-4">
                     <h3 class="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-2">03 / Collection Overview Description</h3>
                     <textarea id="collectionOverviewInput" rows="2" class="w-full p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#1c1b1a] resize-none" placeholder="Enter collection statement, craftsmanship narratives, or curation background details..." oninput="updateCollectionOverview()"></textarea>
@@ -112,12 +122,15 @@
         </div>
     </div>
 
+    <!-- THE BRANDED EDITORIAL CANVAS FRAME -->
     <div class="print-page w-full max-w-5xl bg-[#fcfbf9] border border-[#eaddd3] p-8 md:p-12 shadow-sm">
         
+        <!-- Paged Media Table Architecture -->
         <table class="w-full border-collapse bg-[#fcfbf9]">
             <thead>
                 <tr>
                     <td class="bg-[#fcfbf9]">
+                        <!-- Compact Header Block Cloned Onto Every Page -->
                         <div class="border-b-2 border-[#1c1b1a] pb-4 mb-4 flex justify-between items-end bg-[#fcfbf9]">
                             <div class="flex flex-col gap-1.5">
                                 <img src="HC Logo_ 2000 x 2000 px-.png" alt="Home Canvas Logo" class="h-20 w-auto object-contain object-left">
@@ -134,10 +147,12 @@
             <tbody>
                 <tr>
                     <td class="bg-[#fcfbf9]">
+                        <!-- Dynamic Collection Narrative Statement Block -->
                         <div id="collectionOverviewContainer" class="hidden mb-8 border-b border-[#f0ede9] pb-6">
                             <p id="collectionOverviewText" class="text-xs text-stone-600 font-light leading-relaxed max-w-3xl tracking-wide text-justify italic"></p>
                         </div>
 
+                        <!-- Product Display Matrix Grid -->
                         <div id="catalogGrid" class="catalog-grid grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-10 bg-[#fcfbf9]">
                             <div id="placeholderText" class="col-span-2 text-center py-24 text-stone-300 font-light text-sm italic tracking-wide">
                                 Your collection layout canvas is currently empty. Initialize a Shopify CSV file import or add a manual record block above.
@@ -150,8 +165,10 @@
             <tfoot>
                 <tr>
                     <td class="bg-[#fcfbf9]">
+                        <!-- Height spacer keeps content away from the page bottom margin -->
                         <div class="page-footer-space no-print h-14"></div>
                         
+                        <!-- Clean Repeat Footer Block -->
                         <div class="page-footer-container border-t border-[#e7e5e4] pt-4 pb-2 text-[9px] uppercase tracking-widest text-stone-400 font-semibold bg-[#fcfbf9]">
                             <div class="flex justify-between items-center w-full bg-[#fcfbf9]">
                                 <span>Home Canvas</span>
