@@ -18,15 +18,15 @@
             font-family: 'Playfair Display', Georgia, serif;
         }
 
-        /* DEFAULT ON-SCREEN DISPLAY FOR PRINT FOOTER */
-        .print-footer-fixed {
+        /* SCREEN DISPLAY HIDE FOR MULTI-PAGE FOOTER ELEMENT */
+        .print-footer-repeater {
             display: none;
         }
 
         @media print {
             @page { 
                 size: A4 portrait; 
-                margin: 20mm 20mm 25mm 20mm; /* Added bottom margin buffer to house the footer safely */
+                margin: 20mm 20mm 25mm 20mm; /* Deep bottom margin creates a defensive safe zone */
             }
             html, body {
                 background: #ffffff !important;
@@ -43,34 +43,37 @@
                 max-width: 100% !important; 
                 background: transparent !important; 
                 border: none !important;
-                min-h-0 !important;
                 display: block !important;
             }
             .catalog-grid { 
                 display: grid !important; 
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important; 
                 gap: 2.5rem !important; 
+                page-break-inside: auto !important;
             }
             .product-card { 
                 page-break-inside: avoid !important; 
                 break-inside: avoid !important; 
                 background: #fbfaf7 !important;
                 border: 1px solid #eae6df !important;
+                margin-bottom: 0.5rem;
             }
 
-            /* MULTI-PAGE PRINT STAMP FIX */
+            /* FIX FOR OVERLAP (image_20b74a.png) */
             .inline-footer {
-                display: none !important; /* Hide screen layout footer */
+                display: none !important; /* Removes layout duplicate at document base */
             }
-            .print-footer-fixed {
+            
+            .print-footer-repeater {
                 display: block !important;
                 position: fixed !important;
-                bottom: -10mm; /* Positions inside the native page margin */
-                left: 0;
-                right: 0;
-                width: 100%;
+                bottom: 0 !important; /* Pin precisely to the floor of the safe print zone margin */
+                left: 0 !important;
+                right: 0 !important;
+                width: 100% !important;
+                height: auto !important;
                 background: #ffffff !important;
-                page-break-after: always;
+                z-index: 9999;
             }
         }
     </style>
@@ -147,22 +150,22 @@
             </div>
 
             <!-- Product Display Matrix Grid -->
-            <div id="catalogGrid" class="catalog-grid grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-12 pb-12">
+            <div id="catalogGrid" class="catalog-grid grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-12 pb-16">
                 <div id="placeholderText" class="col-span-2 text-center py-24 text-stone-300 font-light text-sm italic tracking-wide">
                     Your collection layout canvas is currently empty. Initialize a Shopify CSV file import or add a manual record block above.
                 </div>
             </div>
         </div>
 
-        <!-- FIXED FOOTER REPEATER (Triggers exclusively on printed sheets) -->
-        <div class="print-footer-fixed border-t border-[#e7e5e4] pt-4 text-[9px] uppercase tracking-widest text-stone-400 font-semibold">
-            <div class="flex justify-between items-center bg-white">
+        <!-- STABLE MULTI-PAGE PRINT STAMP -->
+        <div class="print-footer-repeater border-t border-[#e7e5e4] pt-4 text-[9px] uppercase tracking-widest text-stone-400 font-semibold bg-white">
+            <div class="flex justify-between items-center bg-white pb-2">
                 <span>Home Canvas</span>
                 <span>Contact Us: hello@homecanvas.com | +91 9591736665</span>
             </div>
         </div>
 
-        <!-- INLINE SCREEN FOOTER (Keeps things structured visually while setting up mockups) -->
+        <!-- ON-SCREEN LAYOUT MOCKUP FOOTER -->
         <div class="inline-footer border-t border-[#e7e5e4] pt-6 mt-16 flex justify-between items-center text-[9px] uppercase tracking-widest text-stone-400 font-semibold">
             <span>Home Canvas</span>
             <span>Contact Us: hello@homecanvas.com | +91 9591736665</span>
@@ -220,6 +223,7 @@
             document.getElementById('pImage').value = '';
         }
 
+        // Shopify CSV Parsing Scripts remain unchanged
         function handleShopifyCSV(event) {
             const file = event.target.files[0];
             if (!file) return;
