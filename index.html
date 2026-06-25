@@ -24,7 +24,7 @@
                 margin: 15mm 15mm 15mm 15mm;
             }
             html, body {
-                background: #ffffff !important;
+                background: #fcfbf9 !important;
                 color: #1c1b1a !important;
                 padding: 0 !important;
                 margin: 0 !important;
@@ -36,7 +36,7 @@
                 margin: 0 !important; 
                 box-shadow: none !important; 
                 max-width: 100% !important; 
-                background: transparent !important; 
+                background: #fcfbf9 !important; 
                 border: none !important;
                 display: block !important;
             }
@@ -52,7 +52,6 @@
                 border: 1px solid #eae6df !important;
             }
             
-            /* Clean structural spacers inside print layout table */
             .page-footer-space {
                 height: 50px;
             }
@@ -60,14 +59,13 @@
                 position: fixed;
                 bottom: 0;
                 width: 100%;
-                background: #ffffff !important;
+                background: #fcfbf9 !important;
             }
         }
     </style>
 </head>
 <body class="bg-[#fcfbf9] text-[#1c1b1a] min-h-screen p-4 md:p-12 flex flex-col items-center">
 
-    <!-- CONTROL WORKBENCH PANEL -->
     <div class="no-print w-full max-w-5xl bg-white border border-[#e2dfda] p-8 rounded shadow-sm mb-12">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-[#f0ede9] pb-5 gap-4">
             <div>
@@ -80,7 +78,6 @@
         </div>
         
         <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
-            <!-- Shopify File Drop Box -->
             <div class="lg:col-span-2 border-r border-[#f0ede9] pr-0 lg:pr-6 flex flex-col justify-between">
                 <div>
                     <h3 class="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-2">01 / Shopify Sync</h3>
@@ -94,7 +91,6 @@
                 </div>
             </div>
 
-            <!-- Custom Manual Asset Grid Injection -->
             <div class="lg:col-span-3 flex flex-col gap-5">
                 <div>
                     <h3 class="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-3">02 / Custom Product Addition</h3>
@@ -108,7 +104,6 @@
                     </button>
                 </div>
 
-                <!-- Collection Macro Statement Box Injection -->
                 <div class="border-t border-[#f0ede9] pt-4">
                     <h3 class="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-2">03 / Collection Overview Description</h3>
                     <textarea id="collectionOverviewInput" rows="2" class="w-full p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#1c1b1a] resize-none" placeholder="Enter collection statement, craftsmanship narratives, or curation background details..." oninput="updateCollectionOverview()"></textarea>
@@ -117,22 +112,19 @@
         </div>
     </div>
 
-    <!-- THE BRANDED EDITORIAL CANVAS FRAME -->
-    <div class="print-page w-full max-w-5xl bg-[#fcfbf9] border border-[#eaddd3] p-8 md:p-16 shadow-sm">
+    <div class="print-page w-full max-w-5xl bg-[#fcfbf9] border border-[#eaddd3] p-8 md:p-12 shadow-sm">
         
-        <!-- Paged Media Table Architecture -->
-        <table class="w-full border-collapse">
+        <table class="w-full border-collapse bg-[#fcfbf9]">
             <thead>
                 <tr>
-                    <td>
-                        <!-- Header Block Header cloned onto every page -->
-                        <div class="border-b-2 border-[#1c1b1a] pb-6 mb-8 flex justify-between items-end bg-[#fcfbf9]">
-                            <div class="flex flex-col gap-2">
-                                <img src="HC Logo_ 2000 x 2000 px-.png" alt="Home Canvas Logo" class="h-28 w-auto object-contain object-left">
-                                <h2 class="text-sm tracking-widest text-[#1c1b1a] font-light uppercase pl-1">Catalogue</h2>
+                    <td class="bg-[#fcfbf9]">
+                        <div class="border-b-2 border-[#1c1b1a] pb-4 mb-4 flex justify-between items-end bg-[#fcfbf9]">
+                            <div class="flex flex-col gap-1.5">
+                                <img src="HC Logo_ 2000 x 2000 px-.png" alt="Home Canvas Logo" class="h-20 w-auto object-contain object-left">
+                                <h2 class="text-xs tracking-widest text-[#1c1b1a] font-light uppercase pl-0.5">Catalogue</h2>
                             </div>
-                            <div class="text-right pb-1">
-                                <span class="text-[10px] uppercase tracking-[0.15em] text-[#7c756e] font-semibold block">Furniture | Lighting | Decor</span>
+                            <div class="text-right pb-0.5">
+                                <span class="text-[9px] uppercase tracking-[0.15em] text-[#7c756e] font-semibold block">Furniture | Lighting | Decor</span>
                             </div>
                         </div>
                     </td>
@@ -141,14 +133,12 @@
             
             <tbody>
                 <tr>
-                    <td>
-                        <!-- Dynamic Collection Narrative Statement Block -->
-                        <div id="collectionOverviewContainer" class="hidden mb-12 border-b border-[#f0ede9] pb-8">
+                    <td class="bg-[#fcfbf9]">
+                        <div id="collectionOverviewContainer" class="hidden mb-8 border-b border-[#f0ede9] pb-6">
                             <p id="collectionOverviewText" class="text-xs text-stone-600 font-light leading-relaxed max-w-3xl tracking-wide text-justify italic"></p>
                         </div>
 
-                        <!-- Product Display Matrix Grid -->
-                        <div id="catalogGrid" class="catalog-grid grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-12">
+                        <div id="catalogGrid" class="catalog-grid grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-10 bg-[#fcfbf9]">
                             <div id="placeholderText" class="col-span-2 text-center py-24 text-stone-300 font-light text-sm italic tracking-wide">
                                 Your collection layout canvas is currently empty. Initialize a Shopify CSV file import or add a manual record block above.
                             </div>
@@ -159,13 +149,11 @@
 
             <tfoot>
                 <tr>
-                    <td>
-                        <!-- Height spacer keeps content away from the page bottom margin -->
-                        <div class="page-footer-space no-print h-16"></div>
+                    <td class="bg-[#fcfbf9]">
+                        <div class="page-footer-space no-print h-14"></div>
                         
-                        <!-- Clean Repeat Footer Block -->
                         <div class="page-footer-container border-t border-[#e7e5e4] pt-4 pb-2 text-[9px] uppercase tracking-widest text-stone-400 font-semibold bg-[#fcfbf9]">
-                            <div class="flex justify-between items-center w-full">
+                            <div class="flex justify-between items-center w-full bg-[#fcfbf9]">
                                 <span>Home Canvas</span>
                                 <span>Contact Us: hello@homecanvas.com | +91 9591736665</span>
                             </div>
