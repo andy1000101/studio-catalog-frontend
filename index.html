@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio Catalog Workbench</title>
+    <title>Studio Catalog Workbench - Dynamic Option Mapping</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
@@ -21,7 +21,6 @@
         @media print {
             @page { 
                 size: A4 portrait; 
-                /* Zero out the physical browser margin box to eliminate the hard white border */
                 margin: 0mm !important; 
             }
             html, body {
@@ -33,7 +32,6 @@
             .no-print { display: none !important; }
             
             .print-page { 
-                /* Inject the real structural breathing room securely inside the printable page canvas frame */
                 padding: 15mm 15mm 10mm 15mm !important; 
                 margin: 0 !important; 
                 box-shadow: none !important; 
@@ -61,7 +59,7 @@
             }
             .page-footer-container {
                 position: fixed;
-                bottom: 12mm; /* Lifted up slightly away from the absolute edge of physical paper sheet sheets */
+                bottom: 12mm; 
                 left: 15mm;
                 right: 15mm;
                 width: calc(100% - 30mm);
@@ -77,7 +75,7 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-[#f0ede9] pb-5 gap-4">
             <div>
                 <h1 class="text-lg uppercase tracking-widest text-[#1c1b1a] font-medium serif-title">Catalog Workbench</h1>
-                <p class="text-xs text-stone-400 mt-1">Robust parser built directly for complex, multi-line Shopify exports.</p>
+                <p class="text-xs text-stone-400 mt-1">Robust parser configured for dynamic variant options inside products_export_1.csv.</p>
             </div>
             <button onclick="window.print()" class="bg-[#1c1b1a] text-[#fcfbf9] text-xs px-6 py-3 rounded uppercase tracking-widest font-semibold hover:bg-[#3e3a36] transition-colors shadow-sm">
                 Print / Export Catalog
@@ -89,7 +87,7 @@
             <div class="lg:col-span-2 border-r border-[#f0ede9] pr-0 lg:pr-6 flex flex-col justify-between">
                 <div>
                     <h3 class="text-xs font-semibold uppercase tracking-widest text-stone-500 mb-2">01 / Shopify Sync</h3>
-                    <p class="text-xs text-stone-400 mb-4 font-light leading-relaxed">Drop your native product export sheet here. Handles line-wrapped strings and variants smoothly.</p>
+                    <p class="text-xs text-stone-400 mb-4 font-light leading-relaxed">Drop your products_export_1.csv sheet here. Automatically captures Material properties from option groups.</p>
                 </div>
                 <div class="border border-dashed border-[#c2beba] rounded p-6 text-center bg-[#faf9f6] transition-colors hover:border-[#1c1b1a] relative min-h-[140px] flex items-center justify-center group">
                     <input type="file" id="csvFile" accept=".csv" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleShopifyCSV(event)">
@@ -106,6 +104,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                         <input type="text" id="pTitle" class="p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#1c1b1a]" placeholder="Product Title">
                         <input type="text" id="pPrice" class="p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#1c1b1a]" placeholder="Price (e.g. ₹45,000)">
+                        <input type="text" id="pMaterial" class="sm:col-span-2 p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#1c1b1a]" placeholder="Material (e.g. Banana Fiber Paper, Raw Silk)">
                         <input type="text" id="pImage" class="sm:col-span-2 p-3 border border-[#e2dfda] bg-[#faf9f6] text-xs rounded focus:outline-none focus:border-[#1c1b1a]" placeholder="Image Link Address URL">
                     </div>
                     <button onclick="addManualProduct()" class="w-full bg-[#f4f2ee] text-[#1c1b1a] text-xs py-2.5 rounded uppercase tracking-wider font-semibold hover:bg-[#eaddd3] transition-all border border-[#e2dfda]">
@@ -130,7 +129,6 @@
             <thead>
                 <tr>
                     <td class="bg-[#fcfbf9]">
-                        <!-- Compact Header Block Cloned Onto Every Page -->
                         <div class="border-b-2 border-[#1c1b1a] pb-4 mb-4 flex justify-between items-end bg-[#fcfbf9]">
                             <div class="flex flex-col gap-1.5">
                                 <img src="HC Logo_ 2000 x 2000 px-.png" alt="Home Canvas Logo" class="h-20 w-auto object-contain object-left">
@@ -165,10 +163,8 @@
             <tfoot>
                 <tr>
                     <td class="bg-[#fcfbf9]">
-                        <!-- Height spacer keeps content away from the page bottom margin -->
                         <div class="page-footer-space no-print h-14"></div>
                         
-                        <!-- Clean Repeat Footer Block -->
                         <div class="page-footer-container border-t border-[#e7e5e4] pt-4 pb-2 text-[9px] uppercase tracking-widest text-stone-400 font-semibold bg-[#fcfbf9]">
                             <div class="flex justify-between items-center w-full bg-[#fcfbf9]">
                                 <span>Home Canvas</span>
@@ -196,7 +192,7 @@
             }
         }
 
-        function appendProductToLayout(title, price, image) {
+        function appendProductToLayout(title, price, image, material) {
             const grid = document.getElementById('catalogGrid');
             const placeholder = document.getElementById('placeholderText');
             if(placeholder) placeholder.remove();
@@ -213,6 +209,11 @@
                         <h3 class="text-sm font-normal tracking-wide text-[#1c1b1a] uppercase serif-title leading-tight">${title}</h3>
                         <span class="text-xs font-semibold text-[#7c756e] whitespace-nowrap">${price ? price : 'Price on Request'}</span>
                     </div>
+                    ${material ? 
+                        `<div class="mt-2 pt-2 border-t border-[#f2eee7] text-[11px] text-stone-400 font-light tracking-wide italic">
+                            Material: ${material}
+                         </div>` : ''
+                    }
                 </div>
             `;
             grid.insertAdjacentHTML('beforeend', cardHTML);
@@ -221,14 +222,16 @@
         function addManualProduct() {
             const title = document.getElementById('pTitle').value.trim();
             const price = document.getElementById('pPrice').value.trim();
+            const material = document.getElementById('pMaterial').value.trim();
             const image = document.getElementById('pImage').value.trim();
 
             if(!title) return alert('Please input at least a title identifier.');
 
-            appendProductToLayout(title, price, image);
+            appendProductToLayout(title, price, image, material);
 
             document.getElementById('pTitle').value = '';
             document.getElementById('pPrice').value = '';
+            document.getElementById('pMaterial').value = '';
             document.getElementById('pImage').value = '';
         }
 
@@ -290,6 +293,14 @@
             const priceIdx = headers.indexOf('Variant Price');
             const imageIdx = headers.indexOf('Image Src');
 
+            // Find dynamic position indexes for option arrays
+            const opt1NameIdx = headers.indexOf('Option1 Name');
+            const opt1ValIdx = headers.indexOf('Option1 Value');
+            const opt2NameIdx = headers.indexOf('Option2 Name');
+            const opt2ValIdx = headers.indexOf('Option2 Value');
+            const opt3NameIdx = headers.indexOf('Option3 Name');
+            const opt3ValIdx = headers.indexOf('Option3 Value');
+
             let itemMap = {};
             let lastValidHandle = '';
 
@@ -312,6 +323,16 @@
                 const rawPrice = priceIdx !== -1 ? columns[priceIdx].trim() : '';
                 const image = imageIdx !== -1 ? columns[imageIdx].trim() : '';
 
+                // Extract material property cleanly matching dynamic option names
+                let material = '';
+                if (opt1NameIdx !== -1 && opt1ValIdx !== -1 && columns[opt1NameIdx] && columns[opt1NameIdx].toLowerCase().trim() === 'material') {
+                    material = columns[opt1ValIdx].trim();
+                } else if (opt2NameIdx !== -1 && opt2ValIdx !== -1 && columns[opt2NameIdx] && columns[opt2NameIdx].toLowerCase().trim() === 'material') {
+                    material = columns[opt2ValIdx].trim();
+                } else if (opt3NameIdx !== -1 && opt3ValIdx !== -1 && columns[opt3NameIdx] && columns[opt3NameIdx].toLowerCase().trim() === 'material') {
+                    material = columns[opt3ValIdx].trim();
+                }
+
                 let price = '';
                 if (rawPrice && !isNaN(rawPrice) && rawPrice.trim() !== '') {
                     const parsedNum = parseFloat(rawPrice);
@@ -322,7 +343,7 @@
 
                 if (!itemMap[currentHandle]) {
                     if (title) {
-                        itemMap[currentHandle] = { title, price, image };
+                        itemMap[currentHandle] = { title, price, image, material };
                     }
                 } else {
                     if (!itemMap[currentHandle].image && image) {
@@ -330,6 +351,10 @@
                     }
                     if (!itemMap[currentHandle].price && price) {
                         itemMap[currentHandle].price = price;
+                    }
+                    // Accumulate or prioritize material variants if found on variant line rows
+                    if (!itemMap[currentHandle].material && material) {
+                        itemMap[currentHandle].material = material;
                     }
                 }
             }
@@ -343,7 +368,7 @@
                 if (!item.title) continue; 
                 
                 const displaysPrice = item.price ? item.price : 'Price on Request';
-                appendProductToLayout(item.title, displaysPrice, item.image);
+                appendProductToLayout(item.title, displaysPrice, item.image, item.material);
                 loadedCount++;
             }
 
